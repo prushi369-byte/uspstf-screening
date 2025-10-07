@@ -10,16 +10,23 @@
  * grading scale (A–D, I = insufficient evidence).
  */
 
-// Helper to show/hide pack-year and quit-year inputs based on smoking status
+// Helper to show or hide smoking intensity fields based on smoking status.
+// When the user selects "current" or "former" smoker, we display the
+// cigarettes‑per‑day and years‑smoked inputs. For former smokers we also
+// display the years‑since‑quitting field. Pack‑years will be computed
+// dynamically from these inputs.
 document.getElementById('smoking-status').addEventListener('change', function () {
   const status = this.value;
-  const packGroup = document.getElementById('pack-years-group');
+  const cigsGroup = document.getElementById('cigs-group');
+  const yearsGroup = document.getElementById('years-smoked-group');
   const quitGroup = document.getElementById('quit-years-group');
   if (status === 'current' || status === 'former') {
-    packGroup.style.display = 'block';
+    cigsGroup.style.display = 'block';
+    yearsGroup.style.display = 'block';
     quitGroup.style.display = status === 'former' ? 'block' : 'none';
   } else {
-    packGroup.style.display = 'none';
+    cigsGroup.style.display = 'none';
+    yearsGroup.style.display = 'none';
     quitGroup.style.display = 'none';
   }
 });
@@ -42,8 +49,14 @@ function computeRecommendations() {
   const sex = document.getElementById('sex').value; // 'male' or 'female'
   const pregnant = document.getElementById('pregnant').value === 'yes';
   const smokingStatus = document.getElementById('smoking-status').value; // never, current, former
-  const packYears = parseFloat(document.getElementById('pack-years').value) || 0;
-  const quitYears = parseFloat(document.getElementById('quit-years').value) || 0;
+  // Calculate pack‑years from smoking intensity inputs. If the user enters
+  // cigarettes per day and years smoked, pack‑years are calculated as
+  // (cigarettes per day ÷ 20) × years smoked. If inputs are missing, default
+  // to 0. We still capture years since quitting for former smokers.
+  const cigsPerDay = parseFloat(document.getElementById('cigs-per-day')?.value) || 0;
+  const yearsSmoked = parseFloat(document.getElementById('years-smoked')?.value) || 0;
+  const packYears = (cigsPerDay / 20) * yearsSmoked;
+  const quitYears = parseFloat(document.getElementById('quit-years')?.value) || 0;
   const conditions = getSelectedConditions();
 
   const recs = [];
@@ -123,6 +136,18 @@ function computeRecommendations() {
   }
 
   // Colorectal cancer screening: adults 45–75: regular screening (grade A for 50–75, B for 45–49); selective for 76–85 (C); tests include stool tests, colonoscopy, sigmoidoscopy.
+  // Additional recommendation for persons with a first‑degree relative diagnosed with colorectal cancer:
+  // start colonoscopy at age 40 (or 10 years earlier than the youngest case) and repeat every 5 years. We
+  // approximate using age ≥40 and <45 with the family‑history‑crc flag.
+  if (conditions.includes('family-history-crc') && age >= 40 && age < 45) {
+    recs.push({
+      name: 'Colorectal Cancer (family history)',
+      test: 'Colonoscopy',
+      interval: 'every 5 years',
+      grade: 'B',
+      notes: 'People with a first‑degree relative with colorectal cancer should begin colonoscopy at age 40 or 10 years earlier than the youngest case in the family and repeat every 5 years.'
+    });
+  }
   if (age >= 45 && age <= 75) {
     const grade = age >= 50 ? 'A' : 'B';
     recs.push({

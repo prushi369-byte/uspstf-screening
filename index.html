@@ -39,10 +39,19 @@
           <option value="former">Former smoker</option>
         </select>
       </div>
-      <div class="form-group" id="pack-years-group" style="display:none;">
-        <label for="pack-years">Pack-years smoked (estimate):</label>
-        <input type="number" id="pack-years" name="pack-years" min="0" step="0.1">
+      <!-- Smoking intensity inputs: ask about cigarettes per day and years smoked
+           rather than pack years. These fields will be shown only when the user
+           selects current or former smoker. Pack‑years are calculated in
+           JavaScript as (cigarettes per day ÷ 20) × years smoked. -->
+      <div class="form-group" id="cigs-group" style="display:none;">
+        <label for="cigs-per-day">Cigarettes per day:</label>
+        <input type="number" id="cigs-per-day" name="cigs-per-day" min="0" step="1">
       </div>
+      <div class="form-group" id="years-smoked-group" style="display:none;">
+        <label for="years-smoked">Years you have smoked:</label>
+        <input type="number" id="years-smoked" name="years-smoked" min="0" step="0.1">
+      </div>
+      <!-- Years since quitting is still needed for former smokers to determine when to stop LDCT -->
       <div class="form-group" id="quit-years-group" style="display:none;">
         <label for="quit-years">Years since quitting:</label>
         <input type="number" id="quit-years" name="quit-years" min="0">
@@ -53,6 +62,7 @@
         <div class="checkbox-group">
           <label><input type="checkbox" name="conditions" value="family-history-aaa"> Family history of abdominal aortic aneurysm</label><br>
           <label><input type="checkbox" name="conditions" value="family-history-breast-cancer"> Family history of breast cancer</label><br>
+          <label><input type="checkbox" name="conditions" value="family-history-crc"> Family history of colorectal cancer</label><br>
           <label><input type="checkbox" name="conditions" value="hiv-risk"> High risk for HIV (e.g., multiple sexual partners, injection drug use)</label><br>
           <label><input type="checkbox" name="conditions" value="hcv-risk"> High risk for hepatitis C or B (e.g., injection drug use, transfusions before 1992, born in high prevalence country)</label><br>
           <label><input type="checkbox" name="conditions" value="sti-risk"> High risk for STIs (e.g., multiple partners, unprotected sex)</label><br>
@@ -68,6 +78,95 @@
     </form>
 
     <div id="results" class="results"></div>
+
+    <!-- Static section with a comprehensive list of A & B grade preventive screenings.  
+         This information is not personalized and serves as a quick reference for clinicians 
+         and patients. Each section can be expanded by clicking the summary. -->
+    <details class="guidelines">
+      <summary>Complete list of major preventive screenings (USPSTF/CDC A &amp; B)</summary>
+      <h3>General adult population</h3>
+      <ul>
+        <li><strong>Blood pressure:</strong> all adults ≥18&nbsp;years; check every visit or at least every 3–5&nbsp;years (annually if risk factors).</li>
+        <li><strong>BMI/obesity:</strong> all adults; calculate height, weight and BMI at each visit.</li>
+        <li><strong>Lipid panel:</strong> men ≥35&nbsp;years and women ≥45&nbsp;years (earlier if risk factors); every 5&nbsp;years.</li>
+        <li><strong>Diabetes/prediabetes:</strong> adults 35–70&nbsp;years with overweight/obesity; screen every 3&nbsp;years (fasting glucose or A1c).</li>
+        <li><strong>Colorectal cancer:</strong> adults 45–75&nbsp;years; FIT annually, FIT‑DNA every 3&nbsp;years, CT colonography every 5&nbsp;years or colonoscopy every 10&nbsp;years.</li>
+        <li><strong>Depression:</strong> all adults; screen periodically (PHQ‑2/PHQ‑9).</li>
+        <li><strong>Alcohol misuse:</strong> all adults; screen periodically (AUDIT‑C, CAGE‑AID).</li>
+        <li><strong>Tobacco use:</strong> all adults; ask at each visit and provide counseling/cessation support.</li>
+        <li><strong>Hepatitis C:</strong> adults 18–79&nbsp;years; test once (repeat if ongoing risk).</li>
+        <li><strong>HIV:</strong> adults 15–65&nbsp;years; test once (repeat if risk).</li>
+        <li><strong>Syphilis/STI screening:</strong> risk‑based (men who have sex with men, multiple partners, pregnancy); test annually or as indicated.</li>
+        <li><strong>Hepatitis B:</strong> adults at risk (born in endemic areas, injection drug use, immunosuppressed); test once.</li>
+        <li><strong>Vaccinations:</strong> review immunization status at each visit and update per CDC schedule.</li>
+      </ul>
+      <h3>Women’s screening tests</h3>
+      <ul>
+        <li><strong>Cervical cancer:</strong> women 21–29: Pap every 3&nbsp;years; women 30–65: HPV test every 5&nbsp;years or Pap every 3&nbsp;years or co‑test every 5&nbsp;years.</li>
+        <li><strong>Breast cancer:</strong> women 40–74&nbsp;years: mammography every 2&nbsp;years.</li>
+        <li><strong>Osteoporosis:</strong> women ≥65 or younger women with risk factors: DEXA scan every 1–2&nbsp;years.</li>
+        <li><strong>Chlamydia &amp; gonorrhea:</strong> sexually active women &lt;25 or older at risk: annual NAAT testing.</li>
+        <li><strong>Intimate partner violence:</strong> all women of reproductive age: screen periodically.</li>
+        <li><strong>Pregnancy‑related screens:</strong> during pregnancy follow schedule for HIV, hepatitis B, syphilis, Rh blood type, group B strep, glucose challenge, etc.</li>
+      </ul>
+      <h3>Men’s screening tests</h3>
+      <ul>
+        <li><strong>Abdominal aortic aneurysm:</strong> men 65–75 years who ever smoked: one‑time ultrasound.</li>
+        <li><strong>Prostate cancer (PSA):</strong> men 55–69 years: shared decision; interval varies.</li>
+        <li><strong>Testicular cancer:</strong> routine screening not recommended.</li>
+        <li><strong>STI screening:</strong> risk‑based for HIV, syphilis, gonorrhea and chlamydia.</li>
+      </ul>
+      <h3>Smokers or former smokers</h3>
+      <ul>
+        <li><strong>Lung cancer:</strong> adults 50–80 years with ≥20 pack‑year history who smoke or quit &lt;15 years ago: annual low‑dose chest CT.</li>
+        <li><strong>AAA:</strong> men 65–75 years who ever smoked: one‑time ultrasound.</li>
+        <li><strong>Cessation counseling:</strong> all tobacco users: behavioral or pharmacologic support at every visit.</li>
+      </ul>
+      <h3>Older adults (≥65&nbsp;years)</h3>
+      <ul>
+        <li><strong>Osteoporosis:</strong> women ≥65 and men with risk factors: DEXA every 1–2 years.</li>
+        <li><strong>Cognitive impairment:</strong> adults ≥65: screen periodically (MMSE, MoCA).</li>
+        <li><strong>Fall risk:</strong> adults ≥65: assess gait and balance at each visit.</li>
+        <li><strong>Vision and hearing:</strong> adults ≥65: screen every 1–2 years (Snellen, audiometry).</li>
+        <li><strong>Depression &amp; functional status:</strong> adults ≥65: assess mood and activities of daily living at each visit.</li>
+      </ul>
+      <h3>Young adults (18–39 years)</h3>
+      <ul>
+        <li><strong>Cervical cancer:</strong> women 21–29: Pap every 3 years.</li>
+        <li><strong>STI screening:</strong> sexually active adults: annual chlamydia/gonorrhea/HIV testing based on risk.</li>
+        <li><strong>Blood pressure:</strong> adults ≥18: check at each visit.</li>
+        <li><strong>Lipid panel:</strong> men ≥20 if high risk: every 5 years.</li>
+        <li><strong>Mental health:</strong> depression and anxiety screening periodically.</li>
+        <li><strong>Substance use:</strong> screen for alcohol and drug misuse at each visit.</li>
+        <li><strong>Vaccines:</strong> ensure up‑to‑date immunizations (HPV, Tdap, influenza, COVID‑19, etc.).</li>
+      </ul>
+      <h3>Cancer‑specific summary</h3>
+      <ul>
+        <li><strong>Colorectal cancer:</strong> start at 45 years; continue through 75 years; see intervals above.</li>
+        <li><strong>Breast cancer:</strong> women 40–74 years: mammogram every 2 years.</li>
+        <li><strong>Cervical cancer:</strong> women 21–65 years: Pap/HPV testing per age group.</li>
+        <li><strong>Lung cancer:</strong> age 50–80 with ≥20 pack‑years and smoking history: annual LDCT.</li>
+        <li><strong>Prostate cancer:</strong> men 55–69 years: PSA testing based on shared decision making.</li>
+        <li><strong>Skin cancer:</strong> no routine screening; visual skin exams for high‑risk patients.</li>
+      </ul>
+      <h3>Additional risk‑based or special populations</h3>
+      <ul>
+        <li><strong>Hepatitis B:</strong> screen people born in endemic areas, injection drug users and the immunosuppressed (HBsAg, anti‑HBs, anti‑HBc).</li>
+        <li><strong>Tuberculosis:</strong> screen high‑risk individuals (immigrants from endemic regions, exposure or immunocompromise) with IGRA or PPD.</li>
+        <li><strong>Lead/heavy metal:</strong> test those with occupational exposure or certain immigrants.</li>
+        <li><strong>Thyroid disorders:</strong> no routine screening; test TSH when symptoms or risk factors are present.</li>
+        <li><strong>Abnormal glucose in pregnancy:</strong> screen at 24–28 weeks with oral glucose tolerance test.</li>
+        <li><strong>Aortic aneurysm &amp; cardiovascular risk:</strong> smokers and hypertensive men: consider abdominal ultrasound and lipid profile.</li>
+      </ul>
+      <h3>Summary by age</h3>
+      <ul>
+        <li><strong>18–24 years:</strong> BP, BMI, STI, depression, HPV vaccine.</li>
+        <li><strong>25–39 years:</strong> add Pap, lipids if risk, HIV and hepatitis C once.</li>
+        <li><strong>40–49 years:</strong> add mammogram (≥40), diabetes screening, colorectal cancer screening (≥45).</li>
+        <li><strong>50–64 years:</strong> add colorectal, lung (if smoker), optional PSA, lipid monitoring.</li>
+        <li><strong>65+ years:</strong> add DEXA, fall/cognition assessment, vision and hearing checks.</li>
+      </ul>
+    </details>
   </div>
   <script src="script.js"></script>
 </body>
