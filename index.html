@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>USPSTF Screening Recommendations</title>
+  <!-- Import Font Awesome for health‑related icons.  
+       Using a CDN ensures icons load without bundling additional files. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -70,8 +73,16 @@
           <label><input type="checkbox" name="conditions" value="osteoporosis-risk"> Risk factors for osteoporosis (e.g., early menopause, low body weight, corticosteroid use)</label><br>
           <label><input type="checkbox" name="conditions" value="overweight"> Overweight or obese (BMI ≥25 kg/m²)</label><br>
           <label><input type="checkbox" name="conditions" value="alcohol-use"> Unhealthy alcohol use (frequent binge drinking or >7 drinks/week for women, >14 drinks/week for men)</label><br>
+        <label><input type="checkbox" name="conditions" value="diabetes"> Diabetes (type 1 or type 2)</label><br>
         </div>
       </fieldset>
+
+      <!-- Age of first‑degree relative at colon cancer diagnosis. This field appears only
+           when the user checks the family history of colorectal cancer checkbox. -->
+      <div class="form-group" id="relative-age-group" style="display:none;">
+        <label for="relative-age">Age at diagnosis of your first‑degree relative with colorectal cancer:</label>
+        <input type="number" id="relative-age" name="relative-age" min="0" max="120">
+      </div>
       <div class="form-group">
         <button type="submit" id="submit-btn">Get Recommendations</button>
       </div>
@@ -148,6 +159,12 @@
         <li><strong>Lung cancer:</strong> age 50–80 with ≥20 pack‑years and smoking history: annual LDCT.</li>
         <li><strong>Prostate cancer:</strong> men 55–69 years: PSA testing based on shared decision making.</li>
         <li><strong>Skin cancer:</strong> no routine screening; visual skin exams for high‑risk patients.</li>
+      </ul>
+
+      <h3>Diabetes‑specific screenings</h3>
+      <ul>
+        <li><strong>Foot care:</strong> people with diabetes should have a basic foot check at every health care visit and a comprehensive foot exam at least once per year. More frequent exams (every 3–6 months) may be needed if blood sugar or blood pressure control is poor.</li>
+        <li><strong>Eye exam:</strong> people with type 1 diabetes should have a dilated eye exam within five years of diagnosis; those with type 2 diabetes should have one at diagnosis. If no diabetic retinopathy is present, repeat exams at least every two years; if retinopathy exists, exams should occur at least annually.</li>
       </ul>
       <h3>Additional risk‑based or special populations</h3>
       <ul>

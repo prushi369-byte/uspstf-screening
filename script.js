@@ -38,6 +38,25 @@ document.getElementById('screening-form').addEventListener('submit', function (e
   displayRecommendations(recommendations);
 });
 
+// Show or hide the age‑of‑relative input based on whether the family history of colorectal
+// cancer checkbox is checked. When the user selects the box, display the input for
+// entering the age at which their first‑degree relative was diagnosed. Otherwise
+// hide it.
+const crcCheckbox = document.querySelector('input[value="family-history-crc"]');
+const relativeAgeGroup = document.getElementById('relative-age-group');
+if (crcCheckbox) {
+  crcCheckbox.addEventListener('change', function () {
+    if (this.checked) {
+      relativeAgeGroup.style.display = 'block';
+    } else {
+      relativeAgeGroup.style.display = 'none';
+      // clear any previously entered value
+      const relInput = document.getElementById('relative-age');
+      if (relInput) relInput.value = '';
+    }
+  });
+}
+
 // Fetch selected conditions as an array
 function getSelectedConditions() {
   const checkboxes = document.querySelectorAll('input[name="conditions"]:checked');
@@ -59,6 +78,26 @@ function computeRecommendations() {
   const quitYears = parseFloat(document.getElementById('quit-years')?.value) || 0;
   const conditions = getSelectedConditions();
 
+  // If the user has a family history of colorectal cancer and provided an age at
+  // diagnosis for the first‑degree relative, use this to determine when to start
+  // colonoscopy. The USPSTF and other guidelines recommend starting at age 40 or
+  // 10 years earlier than the age at which the youngest affected first‑degree
+  // relative was diagnosed, whichever comes first. We compute the earliest age
+  // accordingly. If no age is provided, default to 40.
+  const relativeAgeInput = document.getElementById('relative-age');
+  let relativeAge = null;
+  if (relativeAgeInput && relativeAgeInput.value) {
+    relativeAge = parseInt(relativeAgeInput.value, 10);
+    if (isNaN(relativeAge)) relativeAge = null;
+  }
+  let colonStartAge = 40;
+  if (relativeAge && relativeAge > 0) {
+    const tenYearsEarlier = relativeAge - 10;
+    // Start at the earlier of age 40 or 10 years earlier than relative’s age
+    colonStartAge = Math.min(40, tenYearsEarlier);
+    if (colonStartAge < 0) colonStartAge = 0;
+  }
+
   const recs = [];
 
   // Abdominal Aortic Aneurysm (AAA) screening
@@ -73,7 +112,7 @@ function computeRecommendations() {
           test: 'One‑time abdominal ultrasound',
           interval: 'once between ages 65‑75',
           grade: 'B',
-          notes: 'Men aged 65–75 with a history of smoking should have a one‑time ultrasound to detect AAA.'
+          notes: 'Men aged 65–75 with a history of smoking (≥100 cigarettes in their lifetime) should have a one‑time ultrasound to detect abdominal aortic aneurysm.'
         });
       } else {
         recs.push({
@@ -81,7 +120,7 @@ function computeRecommendations() {
           test: 'Consider abdominal ultrasound',
           interval: 'once between ages 65‑75',
           grade: 'C',
-          notes: 'Men aged 65–75 who have never smoked may discuss AAA screening with their clinician based on risk factors.'
+          notes: 'Men aged 65–75 who have never smoked should discuss AAA screening with their clinician. Screening may be reasonable for those with additional risk factors such as a first‑degree relative with AAA.'
         });
       }
     } else if (sex === 'female' && (smokingStatus !== 'never' || conditions.includes('family-history-aaa'))) {
@@ -136,35 +175,40 @@ function computeRecommendations() {
   }
 
   // Colorectal cancer screening: adults 45–75: regular screening (grade A for 50–75, B for 45–49); selective for 76–85 (C); tests include stool tests, colonoscopy, sigmoidoscopy.
-  // Additional recommendation for persons with a first‑degree relative diagnosed with colorectal cancer:
-  // start colonoscopy at age 40 (or 10 years earlier than the youngest case) and repeat every 5 years. We
-  // approximate using age ≥40 and <45 with the family‑history‑crc flag.
-  if (conditions.includes('family-history-crc') && age >= 40 && age < 45) {
+  // Colorectal cancer screening:
+  // High‑risk due to family history: start colonoscopy earlier and repeat every 5 years.
+  let addedColonHighRisk = false;
+  if (conditions.includes('family-history-crc') && age >= colonStartAge) {
+    addedColonHighRisk = true;
     recs.push({
       name: 'Colorectal Cancer (family history)',
       test: 'Colonoscopy',
       interval: 'every 5 years',
       grade: 'B',
-      notes: 'People with a first‑degree relative with colorectal cancer should begin colonoscopy at age 40 or 10 years earlier than the youngest case in the family and repeat every 5 years.'
+      notes: 'People with a first‑degree relative with colorectal cancer should begin colonoscopy at age 40 or 10 years earlier than the youngest case in the family (whichever is earlier) and repeat every 5 years.'
     });
   }
-  if (age >= 45 && age <= 75) {
-    const grade = age >= 50 ? 'A' : 'B';
-    recs.push({
-      name: 'Colorectal Cancer',
-      test: 'Stool‑based tests (annual FIT or fecal occult blood) or colonoscopy',
-      interval: 'FIT annually, FIT‑DNA every 3 years, colonoscopy every 10 years',
-      grade: grade,
-      notes: 'Adults aged 45–75 should be screened for colorectal cancer. Options include annual fecal immunochemical test (FIT), FIT‑DNA every 3 years, or colonoscopy every 10 years.'
-    });
-  } else if (age > 75 && age <= 85) {
-    recs.push({
-      name: 'Colorectal Cancer',
-      test: 'Discuss screening',
-      interval: '',
-      grade: 'C',
-      notes: 'Adults aged 76–85 may choose to continue colorectal cancer screening based on overall health and prior screening history.'
-    });
+  // General colorectal cancer screening for average‑risk adults. If high‑risk screening was added,
+  // we skip the average‑risk recommendation to avoid duplication.
+  if (!addedColonHighRisk) {
+    if (age >= 45 && age <= 75) {
+      const grade = age >= 50 ? 'A' : 'B';
+      recs.push({
+        name: 'Colorectal Cancer',
+        test: 'Stool‑based tests (annual FIT or fecal occult blood) or colonoscopy',
+        interval: 'FIT annually, FIT‑DNA every 3 years, colonoscopy every 10 years',
+        grade: grade,
+        notes: 'Adults aged 45–75 should be screened for colorectal cancer. Options include annual fecal immunochemical test (FIT), FIT‑DNA every 3 years, or colonoscopy every 10 years.'
+      });
+    } else if (age > 75 && age <= 85) {
+      recs.push({
+        name: 'Colorectal Cancer',
+        test: 'Discuss screening',
+        interval: '',
+        grade: 'C',
+        notes: 'Adults aged 76–85 may choose to continue colorectal cancer screening based on overall health and prior screening history.'
+      });
+    }
   }
 
   // Lung cancer screening: adults 50–80 with ≥20 pack‑year history who currently smoke or quit within past 15 years (grade B). Stop screening 15 years after quitting or when health conditions preclude treatment.
@@ -328,6 +372,26 @@ function computeRecommendations() {
     });
   }
 
+  // Diabetes‑specific screenings: foot care and eye exams. These recommendations are not graded by USPSTF but are based on American Diabetes Association and CDC guidance.
+  if (conditions.includes('diabetes')) {
+    // Foot examination
+    recs.push({
+      name: 'Diabetes Foot Exam',
+      test: 'Basic foot check and comprehensive exam',
+      interval: 'foot check every visit; comprehensive exam annually',
+      grade: '',
+      notes: 'People with diabetes should have a basic foot check at each health care visit and a comprehensive foot exam at least once per year. More frequent exams (every 3–6 months) may be needed if blood glucose or blood pressure control is poor.'
+    });
+    // Eye examination
+    recs.push({
+      name: 'Diabetes Eye Exam',
+      test: 'Dilated eye exam',
+      interval: 'every 1–2 years depending on retinopathy',
+      grade: '',
+      notes: 'For type 1 diabetes, the first dilated eye exam should occur within 5 years of diagnosis; for type 2 diabetes, at diagnosis. If no retinopathy is detected, repeat at least every 2 years; if retinopathy is present, have a dilated eye exam at least annually.'
+    });
+  }
+
   return recs;
 }
 
@@ -347,7 +411,38 @@ function displayRecommendations(recs) {
     const div = document.createElement('div');
     div.className = 'recommendation';
     const title = document.createElement('h3');
-    title.textContent = `${rec.name} (Grade ${rec.grade})`;
+    // Map recommendation names to Font Awesome icons.  When a specific icon
+    // isn’t defined, fall back to a generic medical stethoscope icon.
+    const iconMap = {
+      'Abdominal Aortic Aneurysm': 'fa-heartbeat',
+      'Breast Cancer': 'fa-ribbon',
+      'Cervical Cancer': 'fa-venus',
+      'Colorectal Cancer': 'fa-dna',
+      'Colorectal Cancer (family history)': 'fa-dna',
+      'Lung Cancer': 'fa-lungs',
+      'Osteoporosis': 'fa-bone',
+      'High Blood Pressure (Hypertension)': 'fa-heart',
+      'Type 2 Diabetes & Prediabetes': 'fa-syringe',
+      'HIV': 'fa-virus',
+      'Hepatitis C': 'fa-virus',
+      'Hepatitis B': 'fa-virus',
+      'Syphilis': 'fa-virus',
+      'Chlamydia & Gonorrhea': 'fa-virus',
+      'Latent Tuberculosis Infection': 'fa-vials',
+      'Unhealthy Alcohol Use': 'fa-wine-glass-alt',
+      'Tobacco Use': 'fa-smoking',
+      'Diabetes Foot Exam': 'fa-shoe-prints',
+      'Diabetes Eye Exam': 'fa-eye',
+      'High Blood Pressure (Hypertension)': 'fa-heart',
+      'AAA': 'fa-heartbeat'
+    };
+    const iconClass = iconMap[rec.name] || 'fa-stethoscope';
+    const iconElem = document.createElement('i');
+    iconElem.className = `fa-solid ${iconClass} rec-icon`;
+    // Compose the title text with grade information. If grade is empty, omit parentheses.
+    const gradeText = rec.grade ? ` (Grade ${rec.grade})` : '';
+    title.appendChild(iconElem);
+    title.appendChild(document.createTextNode(` ${rec.name}${gradeText}`));
     div.appendChild(title);
     const test = document.createElement('p');
     test.innerHTML = `<strong>Test:</strong> ${rec.test}`;

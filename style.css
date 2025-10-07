@@ -1,25 +1,46 @@
 /* Basic styling for the USPSTF screening tool */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f7f9fc;
+  /* Soft gradient background evocative of healthcare (light blue to white) */
+  /* Vibrant gradient reminiscent of health and vitality */
+  background: linear-gradient(135deg, #e0f7fa 0%, #f1f8e9 100%);
   color: #333;
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  margin-top: 30px;
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 25px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  /* Fade the container in on page load */
+  animation: fadeUp 0.6s ease both;
+}
+
+/* Add a subtle lift on hover for the container */
+.container:hover {
+  transform: translateY(-2px);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 h1 {
   text-align: center;
   margin-bottom: 10px;
+  color: #1a73e8;
 }
 
 p {
@@ -53,17 +74,18 @@ input[type="number"], select {
 }
 
 button {
-  background-color: #0070f3;
-  color: white;
+  background-color: #28a745;
+  color: #fff;
   border: none;
-  padding: 10px 16px;
-  border-radius: 4px;
+  padding: 12px 18px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #005bb5;
+  background-color: #1e7e34;
 }
 
 .results {
@@ -76,12 +98,28 @@ button:hover {
   margin-bottom: 10px;
 }
 
+/* Recommendations use a pale green background and subtle fade/slide animation */
 .recommendation {
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #f0f8ff;
-  border-left: 4px solid #0070f3;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  /* Use soft green background for cards and a brighter accent border */
+  background-color: #e8f5e9;
+  border-left: 4px solid #43a047;
   border-radius: 4px;
+  animation: slideFadeIn 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .recommendation h3 {
@@ -91,4 +129,36 @@ button:hover {
 .recommendation p {
   margin: 2px 0;
   font-size: 0.9rem;
+}
+
+/* Style for Font Awesome icons within recommendation titles */
+.rec-icon {
+  margin-right: 6px;
+  color: #2e7d32;
+  /* Slight grow animation when cards appear */
+  animation: popIn 0.5s ease forwards;
+  transform: scale(0.8);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Styling for the expandable guidelines section */
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+  color: #1a73e8;
+  margin-top: 10px;
+}
+
+details[open] summary {
+  color: #28a745;
 }
