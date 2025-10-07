@@ -1,0 +1,94 @@
+/* Basic styling for the USPSTF screening tool */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f9fc;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  margin-top: 30px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="number"], select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.checkbox-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: normal;
+}
+
+button {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: #005bb5;
+}
+
+.results {
+  margin-top: 30px;
+  padding: 10px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.results h2 {
+  margin-bottom: 10px;
+}
+
+.recommendation {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f0f8ff;
+  border-left: 4px solid #0070f3;
+  border-radius: 4px;
+}
+
+.recommendation h3 {
+  margin: 0 0 5px 0;
+}
+
+.recommendation p {
+  margin: 2px 0;
+  font-size: 0.9rem;
+}

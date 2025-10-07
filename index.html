@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USPSTF Screening Recommendations</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>USPSTF Screening Recommendations</h1>
+    <p>This tool helps you identify which preventive screenings from the U.S. Preventive Services Task Force (USPSTF) may be appropriate based on your age, sex and risk factors. Provide the information below and click “Get Recommendations” to see your personalized list.</p>
+
+    <form id="screening-form">
+      <div class="form-group">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" min="0" max="120" required>
+      </div>
+      <div class="form-group">
+        <label for="sex">Sex at birth:</label>
+        <select id="sex" name="sex" required>
+          <option value="">--Select--</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="pregnant">Currently pregnant?</label>
+        <select id="pregnant" name="pregnant">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="smoking-status">Smoking history:</label>
+        <select id="smoking-status" name="smoking-status">
+          <option value="never">Never smoker</option>
+          <option value="current">Current smoker</option>
+          <option value="former">Former smoker</option>
+        </select>
+      </div>
+      <div class="form-group" id="pack-years-group" style="display:none;">
+        <label for="pack-years">Pack-years smoked (estimate):</label>
+        <input type="number" id="pack-years" name="pack-years" min="0" step="0.1">
+      </div>
+      <div class="form-group" id="quit-years-group" style="display:none;">
+        <label for="quit-years">Years since quitting:</label>
+        <input type="number" id="quit-years" name="quit-years" min="0">
+      </div>
+
+      <fieldset>
+        <legend>Medical history &amp; risk factors (check all that apply):</legend>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="conditions" value="family-history-aaa"> Family history of abdominal aortic aneurysm</label><br>
+          <label><input type="checkbox" name="conditions" value="family-history-breast-cancer"> Family history of breast cancer</label><br>
+          <label><input type="checkbox" name="conditions" value="hiv-risk"> High risk for HIV (e.g., multiple sexual partners, injection drug use)</label><br>
+          <label><input type="checkbox" name="conditions" value="hcv-risk"> High risk for hepatitis C or B (e.g., injection drug use, transfusions before 1992, born in high prevalence country)</label><br>
+          <label><input type="checkbox" name="conditions" value="sti-risk"> High risk for STIs (e.g., multiple partners, unprotected sex)</label><br>
+          <label><input type="checkbox" name="conditions" value="tb-risk"> Risk for latent TB infection (e.g., lived in high-prevalence country, health‑care worker, long-term care facility)</label><br>
+          <label><input type="checkbox" name="conditions" value="osteoporosis-risk"> Risk factors for osteoporosis (e.g., early menopause, low body weight, corticosteroid use)</label><br>
+          <label><input type="checkbox" name="conditions" value="overweight"> Overweight or obese (BMI ≥25 kg/m²)</label><br>
+          <label><input type="checkbox" name="conditions" value="alcohol-use"> Unhealthy alcohol use (frequent binge drinking or >7 drinks/week for women, >14 drinks/week for men)</label><br>
+        </div>
+      </fieldset>
+      <div class="form-group">
+        <button type="submit" id="submit-btn">Get Recommendations</button>
+      </div>
+    </form>
+
+    <div id="results" class="results"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
